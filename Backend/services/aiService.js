@@ -176,11 +176,101 @@
 
 
 
+// import dotenv from "dotenv";
+// dotenv.config();
+
+// import Groq from "groq-sdk";
+
+// import Message from "../models/Message.js";
+
+// console.log(
+//   "✅ GROQ KEY LOADED:",
+//   process.env.GROQ_API_KEY ? "YES" : "NO ❌"
+// );
+
+// const groq = new Groq({
+//   apiKey: process.env.GROQ_API_KEY,
+// });
+
+// export async function generateReply({
+//   bank,
+//   topic,
+//   userMessage,
+//   history = [],
+//   language = "hinglish",
+//   docs = [], 
+// }) {
+//   try {
+//     // Just last 10 messages for cost optimization
+//     const trimmedHistory = history.slice(-10);
+
+//     const historyText = trimmedHistory
+//       .map((m) => `${m.from === "user" ? "User" : "Bot"}: ${m.text}`)
+//       .join("\n");
+
+//     const languageInstruction =
+//       language === "hi"
+//         ? "Reply mostly in Hindi."
+//         : language === "en"
+//         ? "Reply in simple English."
+//         : "Reply in simple Hinglish (mix of Hindi & English).";
+
+//     const prompt = `
+// You are an AI Banking Helper for Indian users.
+
+// Rules:
+// - DO NOT ask for OTP, PIN, CVV, full account number, UPI PIN, or passwords.
+// - Never perform real transactions.
+// - Only give general guidance and education.
+// - If user asks exact interest rate or charges, say:
+//   "Rates and charges change frequently, please confirm on the bank's official website or branch."
+// - ${languageInstruction}
+// - Keep answers short, clear and friendly.
+// - If the user looks confused, ask 1 follow-up question.
+
+// User selected bank: ${bank || "Not specified"}
+// User topic: ${topic || "general"}
+
+// Previous chat:
+// ${historyText || "(no previous messages)"}
+
+// User message:
+// "${userMessage}"
+// `;
+
+//     const result = await groq.chat.completions.create({
+//       model: "llama-3.1-8b-instant",
+//       messages: [
+//         { role: "system", content: "You are a helpful Indian banking assistant." },
+//         { role: "user", content: prompt },
+//       ],
+//       temperature: 0.4,
+//     });
+
+//     return (
+//       result.choices[0]?.message?.content?.trim() ||
+//       "Thoda aur detail me batao please 🙂"
+//     );
+//   } catch (err) {
+//     console.error("❌ GROQ Error:", err.message);
+//     return "Abhi AI thoda busy hai 😕 thodi der baad try karein.";
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
 import dotenv from "dotenv";
 dotenv.config();
 
 import Groq from "groq-sdk";
-
 import Message from "../models/Message.js";
 
 console.log(
@@ -192,28 +282,39 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
+// ✅ Simple Auto Language Detector
+function detectLanguage(text = "") {
+  const hindiRegex = /[\u0900-\u097F]/; // Hindi unicode range
+
+  if (hindiRegex.test(text)) return "hi";
+  if (/^[a-zA-Z0-9\s.,?!'"-]+$/.test(text)) return "en";
+  return "hinglish";
+}
+
 export async function generateReply({
   bank,
   topic,
   userMessage,
   history = [],
-  language = "hinglish",
-  docs = [], 
+  docs = [],
 }) {
   try {
-    // Just last 10 messages for cost optimization
+    // ✅ Last 10 messages only (cost control)
     const trimmedHistory = history.slice(-10);
 
     const historyText = trimmedHistory
       .map((m) => `${m.from === "user" ? "User" : "Bot"}: ${m.text}`)
       .join("\n");
 
-    const languageInstruction =
-      language === "hi"
-        ? "Reply mostly in Hindi."
-        : language === "en"
-        ? "Reply in simple English."
-        : "Reply in simple Hinglish (mix of Hindi & English).";
+    // ✅ AUTO language detect from user message
+    const detectedLang = detectLanguage(userMessage);
+
+    let languageInstruction = "Reply in simple Hinglish.";
+    if (detectedLang === "hi") {
+      languageInstruction = "Reply mostly in pure Hindi.";
+    } else if (detectedLang === "en") {
+      languageInstruction = "Reply in simple clear English.";
+    }
 
     const prompt = `
 You are an AI Banking Helper for Indian users.
@@ -226,7 +327,7 @@ Rules:
   "Rates and charges change frequently, please confirm on the bank's official website or branch."
 - ${languageInstruction}
 - Keep answers short, clear and friendly.
-- If the user looks confused, ask 1 follow-up question.
+- If user is confused, ask 1 follow-up question only.
 
 User selected bank: ${bank || "Not specified"}
 User topic: ${topic || "general"}
@@ -241,7 +342,10 @@ User message:
     const result = await groq.chat.completions.create({
       model: "llama-3.1-8b-instant",
       messages: [
-        { role: "system", content: "You are a helpful Indian banking assistant." },
+        {
+          role: "system",
+          content: "You are a helpful Indian banking assistant.",
+        },
         { role: "user", content: prompt },
       ],
       temperature: 0.4,
