@@ -1,12 +1,28 @@
 // import { useState } from "react";
 // import "../App.css";
+// import axiosInstance from "../config/axiosConfig";
 
+
+// // ✅ Bank Names
 // const BANKS = [
 //   "SBI", "HDFC", "ICICI", "Axis", "PNB", "BOB", "Canara",
 //   "Union Bank", "Indian Bank", "IDBI", "Kotak", "Yes Bank",
 //   "IndusInd", "Bank of India", "Central Bank", "UCO Bank",
 //   "Federal Bank", "RBL Bank", "South Indian Bank", "Bandhan Bank"
 // ];
+
+// // ✅ Bank Logos Mapping
+// const BANK_LOGOS = {
+//   SBI: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/SBI-logo.svg/2048px-SBI-logo.svg.png",
+//   HDFC: "https://upload.wikimedia.org/wikipedia/commons/2/28/HDFC_Bank_Logo.svg",
+//   ICICI: "https://upload.wikimedia.org/wikipedia/commons/1/12/ICICI_Bank_Logo.svg",
+//   Axis: "https://e7.pngegg.com/pngimages/510/187/png-clipart-axis-bank-logo-horizontal-bank-logos.png",
+//   PNB: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXyT6xYR0eSSB14wdrhfjvwt_9f84h6NJQPw&s",
+//   BOB: "https://1000logos.net/wp-content/uploads/2021/06/Bank-of-Baroda-logo.jpg",
+//   Canara: "https://cdn.brandfetch.io/canarabank.com/fallback/transparent/w/600/h/200/banner?c=1bfwsmEH20zzEfSNTed",
+//   Kotak: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0x-5XTuch9fn5z1DFeFeNUI7iaWTAsN9Bpg&s",
+//   Yes: "https://vectorseek.com/wp-content/uploads/2024/05/Yes-Bank-New-Logo-Vector.svg-.png",
+// };
 
 // const TOPICS = [
 //   { value: "account", label: "Account / Savings" },
@@ -24,17 +40,14 @@
 //   const [loading, setLoading] = useState(false);
 
 //   const [messages, setMessages] = useState([
-//     { from: "bot", text: "Namaste 👋 Apna account type aur bank select karein." },
+//     { from: "bot", text: "Hii 👋 Select Your Bank And Account Type... " },
 //   ]);
 
-//   const backendBase = "http://localhost:5000";
-
 //   const sendMessage = async () => {
-//     // ✅ Validation: Bank not selected
 //     if (!bank) {
 //       setMessages((prev) => [
 //         ...prev,
-//         { from: "bot", text: "⚠️ Pehle apna bank select kijiye." },
+//         { from: "bot", text: "⚠️ Select Your Bank..." },
 //       ]);
 //       return;
 //     }
@@ -47,24 +60,15 @@
 //     setLoading(true);
 
 //     try {
-//       const token = localStorage.getItem("token");
-
-//       const res = await fetch(`${backendBase}/api/chat/message`, {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({
-//           bank,
-//           topic,
-//           userMessage: userText,
-//           conversationId,
-//           language: "hinglish",
-//         }),
+//       const res = await axiosInstance.post("/api/chat/message", {
+//         bank,
+//         topic,
+//         userMessage: userText,
+//         conversationId,
+//         language: "hinglish",
 //       });
 
-//       const data = await res.json();
+//       const data = res.data;
 
 //       if (data.messages) {
 //         setConversationId(data.conversationId);
@@ -77,7 +81,7 @@
 //       console.error(err);
 //       setMessages((prev) => [
 //         ...prev,
-//         { from: "bot", text: "Server se connect nahi ho paaya 😔" },
+//         { from: "bot", text: "Server is not connected. 😔" },
 //       ]);
 //     } finally {
 //       setLoading(false);
@@ -106,7 +110,14 @@
 //             <button onClick={() => setIsOpen(false)}>✖️</button>
 //           </div>
 
-//           {/* Bank + Topic Select (Always Visible After Open) */}
+//           {/* ✅ Selected Bank Logo */}
+//           {bank && BANK_LOGOS[bank] && (
+//             <div className="flex items-center justify-center p-2 border-b bg-slate-50">
+//               <img src={BANK_LOGOS[bank]} alt={bank} className="h-8 object-contain" />
+//             </div>
+//           )}
+
+//           {/* Bank + Topic Select */}
 //           <div className="p-2 border-b space-y-2">
 //             <select
 //               className="w-full border rounded px-2 py-1 text-sm"
@@ -147,11 +158,11 @@
 //               </div>
 //             ))}
 //             {loading && (
-//               <div className="text-xs text-slate-400">Soch raha hoon... 🤔</div>
+//               <div className="text-xs text-slate-400">Please wait, I'm thinking... 🤔</div>
 //             )}
 //           </div>
 
-//           {/* Input Always Visible */}
+//           {/* Input */}
 //           <div className="p-2 border-t flex gap-1">
 //             <input
 //               className="flex-1 border rounded px-2 py-1 text-sm"
@@ -170,6 +181,7 @@
 //               Send
 //             </button>
 //           </div>
+
 //         </div>
 //       )}
 //     </>
@@ -177,10 +189,14 @@
 // }
 
 
+
+
+
+
+
 import { useState } from "react";
 import "../App.css";
 import axiosInstance from "../config/axiosConfig";
-
 
 // ✅ Bank Names
 const BANKS = [
@@ -219,14 +235,32 @@ export default function ChatWidget() {
   const [loading, setLoading] = useState(false);
 
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hii 👋 Select Your Bank And Account Type... " },
+    { from: "bot", text: "Hi 👋 Select your bank and account type." },
   ]);
+
+  // ✅ BULLET FORMATTER FUNCTION
+  const formatBotMessage = (text) => {
+    const lines = text
+      .split(/\n|•|-/)
+      .map((line) => line.trim())
+      .filter((line) => line !== "");
+
+    if (lines.length <= 1) return text;
+
+    return (
+      <ul className="list-disc pl-4 space-y-1">
+        {lines.map((line, idx) => (
+          <li key={idx}>{line}</li>
+        ))}
+      </ul>
+    );
+  };
 
   const sendMessage = async () => {
     if (!bank) {
       setMessages((prev) => [
         ...prev,
-        { from: "bot", text: "⚠️ Select Your Bank..." },
+        { from: "bot", text: "⚠️ Please select your bank first." },
       ]);
       return;
     }
@@ -292,7 +326,11 @@ export default function ChatWidget() {
           {/* ✅ Selected Bank Logo */}
           {bank && BANK_LOGOS[bank] && (
             <div className="flex items-center justify-center p-2 border-b bg-slate-50">
-              <img src={BANK_LOGOS[bank]} alt={bank} className="h-8 object-contain" />
+              <img
+                src={BANK_LOGOS[bank]}
+                alt={bank}
+                className="h-8 object-contain"
+              />
             </div>
           )}
 
@@ -333,20 +371,25 @@ export default function ChatWidget() {
                     : "bg-white text-slate-800 border"
                 }`}
               >
-                {m.text}
+                {m.from === "bot" ? formatBotMessage(m.text) : m.text}
               </div>
             ))}
+
             {loading && (
-              <div className="text-xs text-slate-400">Please wait, I'm thinking... 🤔</div>
+              <div className="text-xs text-slate-400">
+                Please wait, I'm thinking... 🤔
+              </div>
             )}
           </div>
 
           {/* Input */}
           <div className="p-2 border-t flex gap-1">
-            <input
+            <textarea
               className="flex-1 border rounded px-2 py-1 text-sm"
               placeholder={
-                bank ? `Sawaal likhiye (${bank})` : "Bank select karke sawaal likhiye"
+                bank
+                  ? `Type your question (${bank})`
+                  : "Select a bank and type your question"
               }
               value={input}
               onChange={(e) => setInput(e.target.value)}
