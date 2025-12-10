@@ -219,14 +219,14 @@ export default function ChatWidget() {
   const [loading, setLoading] = useState(false);
 
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Namaste 👋 Apna account type aur bank select karein." },
+    { from: "bot", text: "Hii 👋 Select Your Back And Account Type... " },
   ]);
 
   const sendMessage = async () => {
     if (!bank) {
       setMessages((prev) => [
         ...prev,
-        { from: "bot", text: "⚠️ Pehle apna bank select kijiye." },
+        { from: "bot", text: "⚠️ Select Your Bank..." },
       ]);
       return;
     }
