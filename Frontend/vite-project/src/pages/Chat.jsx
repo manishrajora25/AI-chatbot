@@ -179,7 +179,7 @@
 
 import { useState } from "react";
 import "../App.css";
-import axiosInstance from "../config/axiosConfig.";
+import axiosInstance from "../config/axiosConfig";
 
 
 // ✅ Bank Names
