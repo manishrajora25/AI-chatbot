@@ -260,7 +260,7 @@ export default function ChatWidget() {
       console.error(err);
       setMessages((prev) => [
         ...prev,
-        { from: "bot", text: "Server se connect nahi ho paaya 😔" },
+        { from: "bot", text: "Server is not connected. 😔" },
       ]);
     } finally {
       setLoading(false);
@@ -337,7 +337,7 @@ export default function ChatWidget() {
               </div>
             ))}
             {loading && (
-              <div className="text-xs text-slate-400">Soch raha hoon... 🤔</div>
+              <div className="text-xs text-slate-400">Please wait, I'm thinking... 🤔</div>
             )}
           </div>
 
