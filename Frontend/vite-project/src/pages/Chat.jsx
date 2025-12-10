@@ -219,7 +219,7 @@ export default function ChatWidget() {
   const [loading, setLoading] = useState(false);
 
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hii 👋 Select Your Back And Account Type... " },
+    { from: "bot", text: "Hii 👋 Select Your Bank And Account Type... " },
   ]);
 
   const sendMessage = async () => {
