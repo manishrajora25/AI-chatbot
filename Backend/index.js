@@ -8,7 +8,7 @@ import docRoutes from "./routes/docRoutes.js";
 
 import connectDB from "./config/db.js";
 import chatRoutes from "./routes/chatRoutes.js";
-import authRoutes from "./routes/authRoutes.js"; // ✅ agar auth use kar rahe ho
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 
@@ -34,11 +34,11 @@ app.get("/", (req, res) => {
 
 // ✅ Routes
 app.use("/api/auth", authRoutes); 
-app.use("/api/docs", docRoutes);  // login/register
-app.use("/api", chatRoutes);        // chat routes
+app.use("/api/docs", docRoutes);  
+app.use("/api", chatRoutes);      
 
 // ✅ Server Start
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 const startServer = async () => {
   try {
