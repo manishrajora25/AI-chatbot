@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: Backend   # 🔥 VERY IMPORTANT
+
     steps:
       - uses: actions/checkout@v4
 
@@ -25,15 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: |
-            index.js
-            package.json
-            package-lock.json
-            routes
-            controllers
-            models
-            middleware
-            utils
+          path: Backend   # 🔥 backend folder only
 
   deploy:
     runs-on: ubuntu-latest
@@ -61,4 +57,4 @@ jobs:
         with:
           app-name: auth-chat
           slot-name: Production
-          package: .
+          package: Backend
