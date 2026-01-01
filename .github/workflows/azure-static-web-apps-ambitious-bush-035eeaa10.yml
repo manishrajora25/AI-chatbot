@@ -25,9 +25,10 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
 
-          app_location: "Frontend"   # 👈 Vite app folder
-          api_location: ""           # 👈 empty
-          output_location: "dist"    # 👈 Vite build output ✅
+          app_location: "Frontend/vite-project"   # ✅ CORRECT PATH
+          api_location: ""                         # ✅ EMPTY
+          output_location: "dist"                  # ✅ VITE BUILD FOLDER
+          app_build_command: "npm install && npm run build"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
