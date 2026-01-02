@@ -18,6 +18,8 @@ export default function Register() {
       await axiosInstance.post("/api/auth/register", form);
       navigate("/login");
       console.log(axiosInstance); 
+      console.log("API URL =", import.meta.env.VITE_API_URL);
+
     } catch (err) {
       alert("Registration failed. Try again.");
     }
