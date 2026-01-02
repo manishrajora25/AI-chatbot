@@ -15,7 +15,7 @@ export default function Register() {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post("api/auth/register", form);
+      await axiosInstance.post("/api/auth/register", form);
       navigate("/login");
       console.log(axiosInstance); 
     } catch (err) {
